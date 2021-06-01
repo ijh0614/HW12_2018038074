@@ -16,12 +16,12 @@
 #define MAX_HASH_TABLE_SIZE 	MAX_ARRAY_SIZE
 
 /* 필요에 따라 함수 추가 가능 */
-int initialize(int **a);
-int freeArray(int *a);
-void printArray(int *a);
+int initialize(int **a);//배열을 초기화해주는 함수
+int freeArray(int *a);//동적할당 해제
+void printArray(int *a);//현재 배열 출력
 
 int selectionSort(int *a);
-int insertionSort(int *a);
+int insertionSort(int *a);//삽입 정렬 구현
 int bubbleSort(int *a);
 int shellSort(int *a);
 /* recursive function으로 구현 */
@@ -40,7 +40,7 @@ int search(int *ht, int key);
 
 int main()
 {
-	char command;
+	char command;//사용자가 선택하는 기능을 입력받는 변수
 	int *array = NULL;
 	int *hashtable = NULL;
 	int key = -1;
@@ -64,7 +64,7 @@ int main()
 
 		switch(command) {
 		case 'z': case 'Z':
-			initialize(&array);
+			initialize(&array);//array변수의 주소를 보냄.
 			break;
 		case 'q': case 'Q':
 			freeArray(array);
@@ -120,25 +120,25 @@ int main()
 	return 1;
 }
 
-int initialize(int** a)
+int initialize(int** a)//인자로 이중 포인터 즉, array의 주소를 받음
 {
 	int *temp = NULL;
 
 	/* array가 NULL인 경우 메모리 할당 */
-	if(*a == NULL) {
-		temp = (int*)malloc(sizeof(int) * MAX_ARRAY_SIZE);
+	if(*a == NULL) {//아직 배열이 할당되지 않았을 경우
+		temp = (int*)malloc(sizeof(int) * MAX_ARRAY_SIZE);//동적할당한 주소를 temp에 저장 후
 		*a = temp;  /* 할당된 메모리의 주소를 복사 --> main에서 배열을 control 할수 있도록 함*/
 	} else
-		temp = *a;
+		temp = *a;//이미 배열이 할당되어있는 경우
 
 	/* 랜덤값을 배열의 값으로 저장 */
 	for(int i = 0; i < MAX_ARRAY_SIZE; i++)
-		temp[i] = rand() % MAX_ARRAY_SIZE;
+		temp[i] = rand() % MAX_ARRAY_SIZE;//같은 값이 나올 수 있음
 
 	return 0;
 }
 
-int freeArray(int *a)
+int freeArray(int *a)//배열 free해줌
 {
 	if(a != NULL)
 		free(a);
@@ -147,15 +147,15 @@ int freeArray(int *a)
 
 void printArray(int *a)
 {
-	if (a == NULL) {
+	if (a == NULL) {//initialize 해주기 전이라면
 		printf("nothing to print.\n");
 		return;
 	}
-	for(int i = 0; i < MAX_ARRAY_SIZE; i++)
+	for(int i = 0; i < MAX_ARRAY_SIZE; i++)//최소 너비 2를 주고 빈자리에 0을 채우도록 함.
 		printf("a[%02d] ", i);
 	printf("\n");
 	for(int i = 0; i < MAX_ARRAY_SIZE; i++)
-		printf("%5d ", a[i]);
+		printf("%5d ", a[i]);//최소 너비 5
 	printf("\n");
 }
 
@@ -192,29 +192,29 @@ int selectionSort(int *a)
 	return 0;
 }
 
-int insertionSort(int *a)
+int insertionSort(int *a)/*정렬된 부분집합에 정렬되지 않은 부분집합에서 값을 뽑아 삽입하는 형식*/
 {
 	int i, j, t;
 
 	printf("Insertion Sort: \n");
 	printf("----------------------------------------------------------------\n");
 
-	printArray(a);
+	printArray(a);//정렬 전 출력
 
-	for(i = 1; i < MAX_ARRAY_SIZE; i++)
+	for(i = 1; i < MAX_ARRAY_SIZE; i++)//a[0]은 정렬된 부분집합으로 생각하고 시작함. 그래서 i=1부터 시작
 	{
-		t = a[i];
-		j = i;
-		while (a[j-1] > t && j > 0)
+		t = a[i];//정렬되지 않은 부분집합에서 값 하나 뽑아서 저장
+		j = i;//정렬된 부분집합에서 탐색할 index 시작 j에 저장
+		while (a[j-1] > t && j > 0)//j-1부터 정렬된 부분집합. 하나씩 비교하기. j가 끝까지 돌거나 t보다 작은 값이 나올 때까지.
 		{
-			a[j] = a[j-1];
-			j--;
+			a[j] = a[j-1];//오른쪽으로 하나 옮기고
+			j--;//왼쪽으로 이동 탐색.
 		}
-		a[j] = t;
+		a[j] = t;//반복문 탈출시 해당위치에 저장
 	}
 
 	printf("----------------------------------------------------------------\n");
-	printArray(a);
+	printArray(a);//정렬 후 출력
 
 	return 0;
 }
