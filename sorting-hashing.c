@@ -35,14 +35,14 @@ int hashCode(int key);
 int hashing(int *a, int **ht);//인자로 main에 있는 해시 테이블 배열을 직접 전달함
 
 /* hash table에서 key를 찾아 hash table의 index return */
-int search(int *ht, int key);
+int search(int *ht, int key);//해시 테이블과 slot에 저장된 찾고 싶은 값을 입력한다.
 
 
 int main()
 {
 	char command;//사용자가 선택하는 기능을 입력받는 변수
-	int *array = NULL;
-	int *hashtable = NULL;
+	int *array = NULL;//무작위로 값을 입력받을 배열
+	int *hashtable = NULL;//해쉬 테이블의 배열
 	int key = -1;
 	int index = -1;
 
@@ -101,9 +101,9 @@ int main()
 
 		case 'e': case 'E':
 			printf("Your Key = ");
-			scanf("%d", &key);
-			printArray(hashtable);
-			index = search(hashtable, key);
+			scanf("%d", &key);//slot에 저장된 찾고 싶은 값 입력
+			printArray(hashtable);//해시 테이블을 출력하고
+			index = search(hashtable, key);//찾고 싶은 값이 해시 테이블의 어디 index에 저장되었는지 반환
 			printf("key = %d, index = %d,  hashtable[%d] = %d\n", key, index, index, hashtable[index]);
 			break;
 
@@ -312,24 +312,25 @@ int quickSort(int *a, int n)//기준 값을 중심으로 왼쪽 부분집합과 
 	return 0;
 }
 
-int hashCode(int key) {
+int hashCode(int key) {//제산 해시 함수. 나머지를 key값으로 저장.
    return key % MAX_HASH_TABLE_SIZE;
 }
 
-int hashing(int *a, int **ht)
+int hashing(int *a, int **ht)//해시 함수
 {
 	int *hashtable = NULL;
 
 	/* hash table이 NULL인 경우 메모리 할당 */
 	if(*ht == NULL) {
 		hashtable = (int*)malloc(sizeof(int) * MAX_ARRAY_SIZE);
+		//역참조로 main의 헤쉬 테이블에 주소 전달
 		*ht = hashtable;  /* 할당된 메모리의 주소를 복사 --> main에서 배열을 control 할수 있도록 함*/
 	} else {
 		hashtable = *ht;	/* hash table이 NULL이 아닌경우, table 재활용, reset to -1 */
 	}
 
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
-		hashtable[i] = -1;
+		hashtable[i] = -1;//해쉬 테이블에 슬롯(slot) 초기화(buket에 slot하나)
 
 	/*
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
@@ -341,26 +342,26 @@ int hashing(int *a, int **ht)
 	int index = -1;
 	for (int i = 0; i < MAX_ARRAY_SIZE; i++)
 	{
-		key = a[i];
-		hashcode = hashCode(key);
+		key = a[i];//index가 i에 있는 값을 key로 저장
+		hashcode = hashCode(key);//제산 해시 함수
 		/*
 		printf("key = %d, hashcode = %d, hashtable[%d]=%d\n", key, hashcode, hashcode, hashtable[hashcode]);
 		*/
-		if (hashtable[hashcode] == -1)
+		if (hashtable[hashcode] == -1)//slot에 아무런 값도 저장되어있지 않으면
 		{
-			hashtable[hashcode] = key;
-		} else 	{
+			hashtable[hashcode] = key;//평범하게 저장
+		} else 	{//slot에 값이 있으면, 즉 충돌이 발생하면
 
 			index = hashcode;
 
-			while(hashtable[index] != -1)
+			while(hashtable[index] != -1)//선형 조사법을 사용한다.
 			{
-				index = (++index) % MAX_HASH_TABLE_SIZE;
+				index = (++index) % MAX_HASH_TABLE_SIZE;//빈 slot이 나올 때까지 반복하고
 				/*
 				printf("index = %d\n", index);
 				*/
 			}
-			hashtable[index] = key;
+			hashtable[index] = key;//빈 index를 찾으면 저장한다.
 		}
 	}
 
@@ -369,13 +370,15 @@ int hashing(int *a, int **ht)
 
 int search(int *ht, int key)
 {
-	int index = hashCode(key);
+	int index = hashCode(key);//제산 해시 함수에 넣어주었을 때 나온 값
 
-	if(ht[index] == key)
-		return index;
+	if(ht[index] == key)//오버 플로우가 발생하지 않아서 그 자리에 저장되어 있던 경우
+		return index;//그냥 index 반환
 
+	//오버 플로우가 발생한 경우
 	while(ht[++index] != key)
 	{
+		//선형 조사법으로 key를 찾을 때까지 이동
 		index = index % MAX_HASH_TABLE_SIZE;
 	}
 	return index;
